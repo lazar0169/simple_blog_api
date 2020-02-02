@@ -48,7 +48,7 @@ async function addPost(postData) {
 
     console.log('Creating post: ', postData);
     try {
-        const savedPost = await post.save();
+        await post.save();
         console.log('Post saved in database successfully');
     } catch (err) {
         console.error(err);

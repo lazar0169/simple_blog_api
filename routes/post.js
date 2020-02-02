@@ -24,7 +24,7 @@ router.post('/', extractToken, (req, res) => {
 
 });
 
-// Editing specific post
+// Editing the post
 router.post('/:id', extractToken, (req, res) => {
     jwt.verify(req.token, process.env.SECRET_KEY, async (err, authData) => {
         if (err) {
@@ -49,7 +49,7 @@ router.get('/', async (req, res) => {
     res.json(posts);
 });
 
-// Retriving specific post
+// Retriving the post
 router.get('/:id', async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
@@ -60,6 +60,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// Removal of the post
 router.delete('/:id', extractToken, (req, res) => {
     jwt.verify(req.token, process.env.SECRET_KEY, async (err, authData) => {
         if (err) {
@@ -77,7 +78,7 @@ router.delete('/:id', extractToken, (req, res) => {
     });
 });
 
-// Verification
+// Bearer token extraction
 function extractToken(req, res, next) {
     const bearerHeader = req.headers['authorization'];
     if (bearerHeader !== undefined) {

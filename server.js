@@ -37,7 +37,7 @@ app.post('/register', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     password = await bcrypt.hash(password, salt);
     const user = new User({ name, password });
-    
+
     try {
         const savedUser = await user.save();
         res.json(savedUser);
@@ -47,7 +47,6 @@ app.post('/register', async (req, res) => {
 });
 
 // Mongoose
-// console.log('Connecting to MongoDB');
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }, (err) => {
     if (err) return console.error(err);
     console.log('MongoDB connected.');
