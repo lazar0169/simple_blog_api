@@ -4,27 +4,37 @@ const dummyData = [
     {
         title: 'First post',
         tags: ['first', 'test'],
-        body: 'This is the body for the first post'
+        body: 'This is the body for the first post',
+        user: 'test',
+        userId: '000'
     },
     {
         title: 'Second post',
         tags: ['second', 'test'],
-        body: 'This is the body for the second post'
+        body: 'This is the body for the second post',
+        user: 'test',
+        userId: '000'
     },
     {
         title: 'Third post',
         tags: ['third', 'test'],
-        body: 'This is the body for the third post'
+        body: 'This is the body for the third post',
+        user: 'test',
+        userId: '000'
     },
     {
         title: 'Fourth  post',
         tags: ['fourth', 'test'],
-        body: 'This is the body for the fourth post'
+        body: 'This is the body for the fourth post',
+        user: 'test',
+        userId: '000'
     },
     {
         title: 'Fifth post',
         tags: ['fifth', 'test'],
-        body: 'This is the body for the fifth post'
+        body: 'This is the body for the fifth post',
+        user: 'test',
+        userId: '000'
     }
 ];
 
@@ -42,9 +52,9 @@ for (let post of dummyData) {
 }
 
 async function addPost(postData) {
-    const { title, tags, body } = postData;
+    const { title, tags, body, user, userId } = postData;
     const createdAt = new Date();
-    const post = new Post({ title, createdAt, tags, body });
+    const post = new Post({ title, createdAt, tags, body, user, userId });
 
     console.log('Creating post: ', postData);
     try {

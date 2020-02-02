@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const Post = require('../models/post');
+const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
@@ -9,9 +10,11 @@ router.post('/', extractToken, (req, res) => {
         if (err) {
             res.sendStatus(403);
         } else {
-            const { title, tags, body } = req.body;
+            const { title, tags, body, userId } = req.body;
             const createdAt = new Date();
-            const post = new Post({ title, createdAt, tags, body });
+            const reqUser = await User.findById(userId);
+            const user = reqUser.name;
+            const post = new Post({ title, createdAt, tags, body, user, userId });
 
             try {
                 const savedPost = await post.save();
@@ -21,20 +24,19 @@ router.post('/', extractToken, (req, res) => {
             }
         }
     });
-
 });
 
 // Editing the post
 router.post('/:id', extractToken, (req, res) => {
-    jwt.verify(req.token, process.env.SECRET_KEY, async (err, authData) => {
+    jwt.verify(req.token, process.env.SECRET_KEY, async (err) => {
         if (err) {
             res.sendStatus(403);
         } else {
-            const { title, tags, body } = req.body;
+            const { title, tags, body, userId } = req.body;
             const createdAt = new Date();
 
             try {
-                const updatePost = await Post.findOneAndUpdate({ _id: req.params.id }, { title, createdAt, tags, body });
+                const updatePost = await Post.findOneAndUpdate({ _id: req.params.id, userId }, { title, createdAt, tags, body });
                 res.json(updatePost);
             } catch (error) {
                 console.error(err);
@@ -61,14 +63,13 @@ router.get('/:id', async (req, res) => {
 });
 
 // Removal of the post
-router.delete('/:id', extractToken, (req, res) => {
+router.delete('/:id&:user', extractToken, (req, res) => {
     jwt.verify(req.token, process.env.SECRET_KEY, async (err, authData) => {
         if (err) {
             res.sendStatus(403);
         } else {
             try {
-                const post = await Post.findByIdAndDelete(req.params.id);
-                console.log(post);
+                const post = await Post.findOneAndDelete({ _id: req.params.id, userId: req.params.user });
                 res.json(post);
             } catch (error) {
                 console.log(error);
