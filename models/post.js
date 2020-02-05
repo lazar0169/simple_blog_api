@@ -1,13 +1,38 @@
-const mongoose = require('mongoose');
+const Sequelize = require('sequelize');
+const connection = require('../database/connection');
 
-const postSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    createdAt: { type: Date, required: true },
-    tags: { type: [String] },
-    body: {type: String, required: true},
-    user: {type: String, required: true},
-    userId: {type: String, required: true}
-});
+const postSchema = {
+    id: {
+        type: Sequelize.INTEGER(11),
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    title: {
+        type: Sequelize.STRING(300),
+        allowNull: false
+    },
+    createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false
+    },
+    tags: {
+        type: Sequelize.STRING(300),
+        allowNull: false
+    },
+    body: {
+        type: Sequelize.STRING(300),
+        allowNull: false
+    },
+    user: {
+        type: Sequelize.STRING(300),
+        allowNull: false
+    },
+    userId: {
+        type: Sequelize.INTEGER(300),
+        allowNull: false
+    },
+};
 
-const Post = mongoose.model('post', postSchema);
+const Post = connection.define('post', postSchema);
 module.exports = Post;

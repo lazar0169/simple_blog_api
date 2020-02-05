@@ -11,17 +11,10 @@ router.post('/', extractToken, (req, res) => {
             res.sendStatus(403);
         } else {
             const { title, tags, body, userId } = req.body;
-            const createdAt = new Date();
-            const reqUser = await User.findById(userId);
-            const user = reqUser.name;
-            const post = new Post({ title, createdAt, tags, body, user, userId });
-
-            try {
-                const savedPost = await post.save();
-                res.json({ savedPost, authData });
-            } catch (error) {
-                console.error(err);
-            }
+            const reqUser = await User.findOne({ where: { id: userId } });
+            const user = reqUser.dataValues.username;
+            const post = await Post.create({ title, tags, body, user, userId }).catch(errHandler);
+            res.json({ post: post.dataValues });
         }
     });
 });
@@ -33,13 +26,15 @@ router.post('/:id', extractToken, (req, res) => {
             res.sendStatus(403);
         } else {
             const { title, tags, body, userId } = req.body;
-            const createdAt = new Date();
+            const createdAt = new Date().toISOString();
+
+            const post = await Post.findOne({ where: { id: req.params.id, userId } }).catch(errHandler);
 
             try {
-                const updatePost = await Post.findOneAndUpdate({ _id: req.params.id, userId }, { title, createdAt, tags, body });
-                res.json(updatePost);
+                await post.update({ title, createdAt, tags, body });
+                res.sendStatus(200);
             } catch (error) {
-                console.error(err);
+                res.sendStatus(400).json({ error: 'Failed to update the post' });
             }
         }
     });
@@ -47,33 +42,33 @@ router.post('/:id', extractToken, (req, res) => {
 
 // Retriving all posts
 router.get('/', async (req, res) => {
-    const posts = await Post.find();
+    const posts = await Post.findAll();
     res.json(posts);
 });
 
 // Retriving the post
 router.get('/:id', async (req, res) => {
     try {
-        const post = await Post.findById(req.params.id);
-        res.json(post);
+        const post = await Post.findOne({ where: { id: req.params.id } });
+        res.json(post.dataValues);
     } catch (error) {
         console.log(error);
-        res.sendStatus(404);
+        res.sendStatus(404).json('Post does not exist');
     }
 });
 
 // Removal of the post
-router.delete('/:id&:user', extractToken, (req, res) => {
+router.delete('/:id/:user', extractToken, (req, res) => {
     jwt.verify(req.token, process.env.SECRET_KEY, async (err, authData) => {
         if (err) {
             res.sendStatus(403);
         } else {
             try {
-                const post = await Post.findOneAndDelete({ _id: req.params.id, userId: req.params.user });
-                res.json(post);
+                await Post.destroy({ where: { id: req.params.id, userId: req.params.user } });
+                res.sendStatus(200);
             } catch (error) {
                 console.log(error);
-                res.sendStatus(404);
+                res.sendStatus(404).json('Post does not exist');
             }
         }
     });
@@ -89,5 +84,9 @@ function extractToken(req, res, next) {
         res.sendStatus(403);
     }
 }
+
+const errHandler = err => {
+    console.error("Error: ", err);
+};
 
 module.exports = router;
