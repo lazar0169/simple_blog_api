@@ -1,30 +1,18 @@
 const Sequelize = require('sequelize');
 const connection = require('../database/connection');
 
-const postSchema = {
+const likeSchema = {
     id: {
         type: Sequelize.INTEGER(11),
         allowNull: false,
         autoIncrement: true,
         primaryKey: true
     },
-    title: {
-        type: Sequelize.STRING(300),
-        allowNull: false
-    },
-    tags: {
-        type: Sequelize.STRING(300),
-        allowNull: false
-    },
-    body: {
-        type: Sequelize.STRING(300),
-        allowNull: false
-    },
-    user: {
-        type: Sequelize.STRING(300),
-        allowNull: false
-    },
     userId: {
+        type: Sequelize.INTEGER(11),
+        allowNull: false
+    },
+    postId: {
         type: Sequelize.INTEGER(11),
         allowNull: false
     },
@@ -38,5 +26,5 @@ const postSchema = {
     }
 };
 
-const Post = connection.define('post', postSchema);
-module.exports = Post;
+const Like = connection.define('like', likeSchema);
+module.exports = Like;

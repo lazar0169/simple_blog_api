@@ -1,26 +1,24 @@
-const Sequelize = require("sequelize");
+const Sequelize = require('sequelize');
 const connection = require('../database/connection');
 
-const userSchema = {
+const commentSchema = {
     id: {
         type: Sequelize.INTEGER(11),
         allowNull: false,
         autoIncrement: true,
         primaryKey: true
     },
-    username: {
-        type: Sequelize.STRING(35),
-        allowNull: false,
-        unique: true
-    },
-    password: {
+    body: {
         type: Sequelize.STRING(300),
         allowNull: false
     },
-    email: {
-        type: Sequelize.STRING(45),
-        allowNull: false,
-        unique: true
+    userId: {
+        type: Sequelize.INTEGER(11),
+        allowNull: false
+    },
+    postId: {
+        type: Sequelize.INTEGER(11),
+        allowNull: false
     },
     createdAt: {
         type: Sequelize.DATE,
@@ -32,5 +30,5 @@ const userSchema = {
     }
 };
 
-const User = connection.define('user', userSchema);
-module.exports = User;
+const Comment = connection.define('comment', commentSchema);
+module.exports = Comment;
