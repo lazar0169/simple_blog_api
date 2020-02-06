@@ -51,6 +51,37 @@ app.post('/register', async (req, res) => {
     res.sendStatus(201);
 });
 
+app.post('/password', extractToken, (req, res) => {
+    jwt.verify(req.token, process.env.SECRET_KEY, async (err, authData) => {
+        if (err) {
+            res.sendStatus(403);
+        } else {
+            let { password, userId } = req.body;
+            const user = await User.findOne({ where: { id: userId } });
+            const salt = await bcrypt.genSalt(10);
+            password = await bcrypt.hash(password, salt);
+
+            try {
+                await user.update({ password }).catch(errHandler);
+                res.sendStatus(200);
+            } catch (error) {
+                res.sendStatus(400).json({ error: 'Failed to update the post' });
+            }
+        }
+    });
+});
+
+// Bearer token extraction
+function extractToken(req, res, next) {
+    const bearerHeader = req.headers['authorization'];
+    if (bearerHeader !== undefined) {
+        req.token = bearerHeader.split(' ')[1];
+        next();
+    } else {
+        res.sendStatus(403);
+    }
+}
+
 const errHandler = err => {
     console.error("Error: ", err);
 };
